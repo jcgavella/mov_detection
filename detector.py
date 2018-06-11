@@ -13,7 +13,7 @@ def diffImg(t0, t1, t2):
 
 
 ######################### Threshold for triggering "motion detection"
-threshold = 109000
+threshold = 105000
 cam = cv2.VideoCapture(1)
 #cam = cv2.VideoCapture("people-walking.mp4")
 
@@ -34,7 +34,13 @@ while True:
     cv2.putText(frame, text, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)   # display it on screen
     if totalDiff > threshold and timeCheck != datetime.now().strftime('%Ss'):
         dimg= cam.read()[1]
-        cv2.imwrite(datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg', dimg)
+        #cv2.imwrite(datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg', dimg)
+        #-------------------------------------------------------------------------------------
+        nameFile   = datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg'
+        nameFolder = './data/'
+        pathName = nameFolder+nameFile
+        cv2.imwrite(pathName, cv2.resize(dimg,(800,600)))
+        #-------------------------------------------------------------------------------------
     timeCheck = datetime.now().strftime('%Ss')
     # Read next image
     t_minus = t

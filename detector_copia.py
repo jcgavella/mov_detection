@@ -13,7 +13,7 @@ def diffImg(t0, t1, t2):
 
 
 ######################### Threshold for triggering "motion detection"
-threshold = 111000
+threshold = 109000
 cam = cv2.VideoCapture(1)
 #cam = cv2.VideoCapture("people-walking.mp4")
 
