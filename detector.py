@@ -3,8 +3,9 @@
 import numpy as np		      # importing Numpy for use w/ OpenCV
 import cv2                            # importing Python OpenCV
 from datetime import datetime         # importing datetime for naming files w/ timestamp
-import pandas as pd
 import csv
+import os
+import sys
 
 
 ############################# Function to calculate difference between images....
@@ -15,7 +16,11 @@ def diffImg(t0, t1, t2):
 
 
 ######################### Threshold for triggering "motion detection"
-threshold = 110000
+#threshold = 110000
+
+threshold = sys.argv[1]
+threshold = int(float(threshold))
+
 cam = cv2.VideoCapture(1)
 #cam = cv2.VideoCapture("people-walking.mp4")
 
