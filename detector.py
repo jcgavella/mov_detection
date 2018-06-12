@@ -3,6 +3,8 @@
 import numpy as np		      # importing Numpy for use w/ OpenCV
 import cv2                            # importing Python OpenCV
 from datetime import datetime         # importing datetime for naming files w/ timestamp
+import pandas as pd
+import csv
 
 
 ############################# Function to calculate difference between images....
@@ -13,7 +15,7 @@ def diffImg(t0, t1, t2):
 
 
 ######################### Threshold for triggering "motion detection"
-threshold = 105000
+threshold = 110000
 cam = cv2.VideoCapture(1)
 #cam = cv2.VideoCapture("people-walking.mp4")
 
@@ -27,30 +29,39 @@ t_plus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
 # Lets use a time check so we only take 1 pic per sec
 timeCheck = datetime.now().strftime('%Ss')
 
-while True:
-    ret, frame = cam.read()
-    totalDiff = cv2.countNonZero(diffImg(t_minus, t, t_plus))     # this is total difference number
-    text = "threshold: " + str(totalDiff)                # make a text showing total diff.
-    cv2.putText(frame, text, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)   # display it on screen
-    if totalDiff > threshold and timeCheck != datetime.now().strftime('%Ss'):
-        dimg= cam.read()[1]
-        #cv2.imwrite(datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg', dimg)
-        #-------------------------------------------------------------------------------------
-        nameFile   = datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg'
-        nameFolder = './data/'
-        pathName = nameFolder+nameFile
-        cv2.imwrite(pathName, cv2.resize(dimg,(800,600)))
-        #-------------------------------------------------------------------------------------
-    timeCheck = datetime.now().strftime('%Ss')
-    # Read next image
-    t_minus = t
-    t = t_plus
-    t_plus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
-    cv2.imshow(winName, frame)
+with open('/home/jcgonzalez/Documentos/Proyectos/cv_cosas/detectorMovFot/Salida.csv','w') as csvfile:
+    fieldnames = ['Date/Time','Threshold','totalDiffe','file']
+    writer = csv.DictWriter(csvfile,fieldnames=fieldnames)
+    writer.writeheader()
 
-    key = cv2.waitKey(10)
-    if key == 27:      # comment this 'if' to hide window
-        cv2.destroyWindow(winName)
-        break
+
+    while True:
+        ret, frame = cam.read()
+        totalDiff = cv2.countNonZero(diffImg(t_minus, t, t_plus))     # this is total difference number
+        text = "threshold: " + str(totalDiff)                # make a text showing total diff.
+        cv2.putText(frame, text, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)   # display it on screen
+        if totalDiff > threshold and timeCheck != datetime.now().strftime('%Ss'):
+            dimg= cam.read()[1]
+            #cv2.imwrite(datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg', dimg)
+            #-------------------------------------------------------------------------------------
+            nameFile   = datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg'
+            nameFolder = './data/'
+            pathName = nameFolder+nameFile
+            datatiempo = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            cv2.imwrite(pathName, cv2.resize(dimg,(800,600)))
+            #print (datatiempo, threshold, totalDiff, nameFile)
+            writer.writerow({'Date/Time': datatiempo,'Threshold' : threshold, 'totalDiffe' : totalDiff, 'file' : nameFile})
+            #-------------------------------------------------------------------------------------
+        timeCheck = datetime.now().strftime('%Ss')
+        # Read next image
+        t_minus = t
+        t = t_plus
+        t_plus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
+        cv2.imshow(winName, frame)
+
+        key = cv2.waitKey(10)
+        if key == 27:      # comment this 'if' to hide window
+            cv2.destroyWindow(winName)
+            break
 
 cam.release()
