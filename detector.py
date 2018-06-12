@@ -34,7 +34,7 @@ t_plus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
 # Lets use a time check so we only take 1 pic per sec
 timeCheck = datetime.now().strftime('%Ss')
 
-with open('/home/jcgonzalez/Documentos/Proyectos/cv_cosas/detectorMovFot/Salida.csv','w') as csvfile:
+with open('Salida.csv','w') as csvfile:
     fieldnames = ['Date/Time','Threshold','totalDiffe','file']
     writer = csv.DictWriter(csvfile,fieldnames=fieldnames)
     writer.writeheader()
@@ -44,7 +44,7 @@ with open('/home/jcgonzalez/Documentos/Proyectos/cv_cosas/detectorMovFot/Salida.
         ret, frame = cam.read()
         totalDiff = cv2.countNonZero(diffImg(t_minus, t, t_plus))     # this is total difference number
         text = "threshold: " + str(totalDiff)                # make a text showing total diff.
-        cv2.putText(frame, text, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)   # display it on screen
+        cv2.putText(frame, text, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,135,135), 2)   # display it on screen
         if totalDiff > threshold and timeCheck != datetime.now().strftime('%Ss'):
             dimg= cam.read()[1]
             #cv2.imwrite(datetime.now().strftime('%Y%m%d_%Hh%Mm%Ss%f') + '.jpg', dimg)
@@ -54,7 +54,7 @@ with open('/home/jcgonzalez/Documentos/Proyectos/cv_cosas/detectorMovFot/Salida.
             pathName = nameFolder+nameFile
             datatiempo = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             cv2.imwrite(pathName, cv2.resize(dimg,(800,600)))
-            #print (datatiempo, threshold, totalDiff, nameFile)
+            print (datatiempo, threshold, totalDiff, nameFile)
             writer.writerow({'Date/Time': datatiempo,'Threshold' : threshold, 'totalDiffe' : totalDiff, 'file' : nameFile})
             #-------------------------------------------------------------------------------------
         timeCheck = datetime.now().strftime('%Ss')
@@ -62,7 +62,8 @@ with open('/home/jcgonzalez/Documentos/Proyectos/cv_cosas/detectorMovFot/Salida.
         t_minus = t
         t = t_plus
         t_plus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
-        cv2.imshow(winName, frame)
+        #cv2.imshow(winName, frame)
+        cv2.imshow(winName, cv2.resize(frame,(800,600)))
 
         key = cv2.waitKey(10)
         if key == 27:      # comment this 'if' to hide window
